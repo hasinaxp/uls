@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Document</title>
+	<!-- Compiled and minified CSS -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+</head>
+<body>
+	<nav>
+		<div class="nav-wrapper blue" id="nBar" style="visibility: hidden;">
+		  <a href="/" class="brand-logo">ULS</a>
+		  <ul id="nav-mobile" class="right hide-on-med-and-down">
+			<li><a href="#" id="btnLogout">Log Out</a></li>
+			</ul>
+		</div>
+	  </nav>
+	  <br>
+	  <br>
+	<div class="container">
+		<div class="row card-panel" id="userData"></div>
+	</div>
+
+	<script>
+		window.addEventListener('DOMContentLoaded', async ()=> {
+			let res = await fetch('http://localhost:3000/api/dashboard', {
+				headers: {
+					'Content-type' : 'application/json',
+					'auth' : localStorage.getItem('accessToken')
+				}
+			})
+			res =await res.json();
+			if(res.error) {
+				alert('sorry You are not logged in');
+				window.location = 'http://localhost:3000/login.html';
+			}else {
+				console.log(res);
+				const table = document.createElement('table');
+				for(let prop in res) {
+					let tr = document.createElement('tr');
+					tr.innerHTML = `<td>${prop}</td><td>${res[prop]}</td>`;
+					table.appendChild(tr);
+				}
+				let ud = document.getElementById('userData');
+				ud.innerHTML = "<h3>USER INFORMATION<h3>";
+				ud.appendChild(table);
+				document.getElementById('nBar').style.visibility ='visible';
+			}
+		});
+		document.getElementById('btnLogout').addEventListener('click',async e => {
+			let res = await fetch('http://localhost:3000/api/logout', {
+				headers: {
+					'Content-type' : 'application/json',
+					'auth' : localStorage.getItem('accessToken')
+				}
+			})
+			res =await res.json();
+			if(res.error) {
+				alert('sorry You are not logged in');
+				window.location = 'http://localhost:3000/login.html';
+			}else {
+				alert('Logged out Successfully!!');
+				window.location = 'http://localhost:3000/login.html';
+			
+			}
+		})
+	</script>
+</body>
+</html>

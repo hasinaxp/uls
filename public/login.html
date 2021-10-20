@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- Compiled and minified CSS -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+
+	<title>Login</title>
+
+</head>
+
+<body>
+	<br>
+	<br>
+	<div class="container">
+		<div class="row card-panel">
+			<h3>Login</h3>
+			<form action="post" id="loginForm">
+				<div class="row">
+					<div class="input-field col s12 m6">
+						<input id="email" type="email" class="validate">
+						<label for="email">Email</label>
+					</div>
+					<div class="input-field col s12 m6">
+						<input id="password" type="password" class="validate">
+						<label for="password">password</label>
+					</div>
+					<div class="row">
+						<button type="submit" class="btn blue"> Login</button>
+					</div>
+				</div>
+			</form>
+			<div class="row">
+				<p>not registered ? <a href="http://localhost:3000/register.html"> register here!</a></p>
+			</div>
+		</div>
+	</div>
+	<!-- Compiled and minified JavaScript -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+	<script>
+		window.addEventListener('DOMContentLoaded', () => {
+			M.updateTextFields();
+		});
+		function getField(name) {
+			return document.getElementById(name).value;
+		}
+		document.getElementById('loginForm').addEventListener('submit', async e => {
+			e.preventDefault();
+			let res = await fetch('http://localhost:3000/api/login', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify({
+					email: getField('email'),
+					password: getField('password'),
+					})
+			});
+			let status = res.status;
+			res = await res.json();
+			console.log(res);
+			console.log(res.status);
+			if (status !== 200) {
+				M.toast({ html: `<p class="red-text">${res.msg}</p>` })
+				try {
+
+					for (let err of res.errors)
+						M.toast({ html: `<p class="red-text">${err.msg}</p>` })
+				} catch (err) {
+					M.toast({ html: `<p class="red-text">Invalid email or email already taken</p>` })
+
+				}
+			} else {
+				localStorage.setItem('accessToken', res.accessToken);
+				alert(res.msg);
+
+				window.location = 'http://localhost:3000/';
+			}
+		})
+
+
+	</script>
+
+
+</body>
+
+</html>
